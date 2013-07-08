@@ -499,7 +499,11 @@ class RecordManager
             } catch (Exception $e) {
                 $this->log->log('deduplicate', 'Exception: ' . $e->getMessage(), Logger::FATAL);
             }
+            
+            //flush buffer after each datasource deduplication
+            $this->storeBufferedRecords();
         }
+        
     }
 
     /**
