@@ -65,22 +65,29 @@ class MzkMarcRecord extends MarcRecord
                 array('a','b','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
                         '0','1','2','3','4','5','6','7','8','9'));
 
-        $data['title_display'] = parent::getFieldsSubfields( array(
+       $value = parent::getFieldsSubfields( array(
                 array(MarcRecord::GET_NORMAL, '245', array('a')),
                 array(MarcRecord::GET_NORMAL, '245', array('b')),
                 array(MarcRecord::GET_NORMAL, '245', array('n')),
                 array(MarcRecord::GET_NORMAL, '245', array('p'))
         ),
                 true);
-        $data['title_display'] = is_array( $data['title_display']) ?  $data['title_display'][0] :  $data['title_display'];
-
+       
+        $value = is_array($value) ?  array_pop($value) :  $value;
+        if ($value == null) {
+            $value = '';
+        }
+        $data['title_display'] = $value;
 
         $data['created'] = $this->getCreated();
         $data['title_short'] = $this->getShortTitle();
-        $data['publishDate_display'] = parent::getFieldsSubfields( array(
+        $value = parent::getFieldsSubfields( array(
                 array(MarcRecord::GET_NORMAL, '260', array('c')),true));
-        $data['publishDate_display'] = is_array($data['publishDate_display']) ? $data['publishDate_display'][0] : $data['publishDate_display'];
-
+        $value = is_array($value) ? array_pop($value) : $value;
+        if ($value == null) {
+            $value = '';
+        }
+        $data['publishDate_display'] = $value;
         $data['mzk_visible_str_ns'] = $this->getVisible();
         $data['fulltext'] = $this->getFullText();
 
@@ -95,7 +102,8 @@ class MzkMarcRecord extends MarcRecord
         $data['callnumber_second'] = parent::getSubfield($field,'9');
         $data['source'] = "MZK";
         $data['nbn'] = $this->getNbn();
-
+        
+        $data['publishDateFacet'] = $this->getPublishedDate();
         return $data;
     }
 

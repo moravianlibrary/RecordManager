@@ -191,7 +191,7 @@ class RecordManager
         	$this->storeBufferedRecords();
         	throw $exp;
         } 
-       	//save buffer
+       	//flush buffer when data source is done
        	$this->storeBufferedRecords();
        	
         return $count;
