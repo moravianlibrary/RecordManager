@@ -64,6 +64,7 @@ class HarvestOaiPmh
     protected $resumptionToken = '';  // Override the first harvest request
     protected $transformation = null; // Transformation applied to the OAI-PMH responses before processing
     protected $serverDate = null;     // Date received from server via Identify command. Used to set the last harvest date
+    protected $harvestFunctionCallback = null;
 
     /**
      * Constructor.
@@ -120,6 +121,13 @@ class HarvestOaiPmh
         }
         if (isset($settings['debuglog'])) {
             $this->debugLog = $settings['debuglog'];
+        }
+        if (isset($settings['harvestFunctionCallback'])) { 
+            if (is_callable($settings['harvestFunctionCallback'])) {
+                $this->harvestFunctionCallback = $settings['harvestFunctionCallback'];
+            } else {
+                $this->message("Given callback is not callable", false, Logger::ERROR);
+            }
         }
         if (isset($settings['oaipmhTransformation'])) {
             $style = new DOMDocument();
@@ -323,7 +331,6 @@ class HarvestOaiPmh
             array('ssl_verify_peer' => false)
         );       
         $request->setHeader('User-Agent', 'RecordManager');
-
         // Load request parameters:
         $url = $request->getURL();
         $params['verb'] = $verb;
@@ -376,6 +383,8 @@ class HarvestOaiPmh
         if ($this->debugLog) {
             file_put_contents($this->debugLog, "Response:\n$responseStr\n\n", FILE_APPEND);
         }
+//FIXME        
+        $responseStr = preg_replace('/\&/', '&amp;', $responseStr);
         return $this->processResponse($responseStr);
     }
 
@@ -455,6 +464,7 @@ class HarvestOaiPmh
         }
 
         // If we got this far, we have a valid response:
+
         return $result;
     }
 
@@ -489,6 +499,7 @@ class HarvestOaiPmh
      * Save harvested records and track the end date.
      *
      * @param object $records SimpleXML records.
+     * @param callback function that decides whether record should be processed or ignored (optional)
      *
      * @return void
      * @access protected
@@ -496,18 +507,22 @@ class HarvestOaiPmh
     protected function processRecords($records)
     {
         $this->message('Processing ' . count($records) . ' records', true);
-
+       
         // Loop through the records:
         foreach ($records as $record) {
             $header = $this->getSingleNode($record, 'header');
-            
             // Bypass the record if the record is missing its header:
             if ($header === false) {
                 $this->message("Record header missing", false, Logger::ERROR);
                 echo $this->_xml->saveXML($record) . "\n";
                 continue;
             }
-
+            if ($this->harvestFunctionCallback != null) {
+                if (call_user_func($this->harvestFunctionCallback,$record) == false) {
+                    $this->message("Record processing skipped", true, Logger::INFO);
+                    continue;
+                }
+            }
             // Get the ID of the current record:
             $id = $this->extractID($header);
 
@@ -534,8 +549,8 @@ class HarvestOaiPmh
                     }
                     $attr = $this->_xml->createAttribute($node->nodeName);
                     $attr->value = $node->nodeValue;
-                    $recordNode->appendChild($attr);
-                }                
+                    $recordNode->appendChild($attr);               
+                }        
                 $this->_normalRecords += call_user_func($this->_callback, $id, false, trim($this->_xml->saveXML($recordNode)));
             }
         }
@@ -550,12 +565,13 @@ class HarvestOaiPmh
      * @access protected
      */
     protected function getRecords($params)
-    {
+    { 
         // Make the OAI-PMH request:
         $this->_xml = $this->sendRequest('ListRecords', $params);
-
+        
         // Save the records from the response:
         $listRecords = $this->getSingleNode($this->_xml, 'ListRecords');
+
         if ($listRecords !== false) {
             $records = $this->getImmediateChildrenByTagName($listRecords, 'record');
             if ($records) {
@@ -734,5 +750,16 @@ class HarvestOaiPmh
         }
         return $result;
     }
+    
+    /**
+     * dummy callback method
+     * @param unknown $record
+     * @return boolean - true if record should be processed
+     */
+    public static function dummyRecordCheck($record) {
+        return true;
+    }
+
 }
+
 

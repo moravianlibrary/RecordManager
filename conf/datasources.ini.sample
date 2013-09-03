@@ -11,6 +11,7 @@
 ; dateGranularity = auto
 ; verbose = false
 ; deletions = ListIdentifiers
+; harvestFunctionCallback = HarvestOaiPmh::dummyRecordCheck
 ;
 ; url is the base URL for the OAI-PMH source.
 ;
