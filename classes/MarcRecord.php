@@ -1589,6 +1589,9 @@ class MarcRecord extends BaseRecord
             if ($code === 0) {
                 $code = '0';
             }
+	    if (is_int($code)) {
+                $code = strval($code);
+            }
             if (strstr($codes, $code)) {
                 $data[] = current($subfield);
             }
