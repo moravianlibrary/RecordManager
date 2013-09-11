@@ -43,7 +43,7 @@ require_once 'Logger.php';
  */
 class MzkMarcRecord extends MarcRecord
 {
-
+    protected $institution = 'MZK';
     /**
      * Constructor
      *
@@ -55,5 +55,31 @@ class MzkMarcRecord extends MarcRecord
     {
         parent::__construct($data, $oaiID, $source);
     }
-    
+
+
+    public function toSolrArray() {
+        $data = parent::toSolrArray();
+
+        $depth = 0;
+        $instArray = array();
+        $instArray[] = $depth.'/'.$this->institution;
+        $field = parent::getField('Z30');
+    	if ($field) {
+            $second = parent::getSubfields($field,'2');
+            $third =  parent::getSubfields($field,'f');
+            if ($second) {
+                $depth++;
+                $institution .= '/'.$second;
+                $instArray[] = $depth.'/'.$this->institution; 
+            }
+            if ($third && $depth > 0) {
+                $depth++;
+                $institution .= '/'.$third;
+                $instArray[] = $depth.'/'.$this->institution;
+            }
+        }
+
+        $data['institution'] = $instArray;  
+        return $data;
+    }    
 }
