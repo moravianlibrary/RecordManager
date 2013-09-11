@@ -169,15 +169,20 @@ class RecordManager
 	                echo "Storing records...\n";
 	            }
 	            while (!$splitter->getEOF()) {
-	                $oaiID = '';
-	                $data = $splitter->getNextRecord($oaiID);
-	                if ($this->verbose) {
-	                    echo "Storing a record...\n";
-	                }
-	                $count += $this->storeRecord($oaiID, false, $data);
-	                if ($this->verbose) {
-	                    echo "Stored records: $count...\n";
-	                }
+                    try {
+	                    $oaiID = '';
+	                    $data = $splitter->getNextRecord($oaiID);
+	                    if ($this->verbose) {
+	                        echo "Storing a record...\n";
+	                    }
+	                    $count += $this->storeRecord($oaiID, false, $data);
+	                    if ($this->verbose) {
+	                        echo "Stored records: $count...\n";
+	                    }
+                    } catch (Exception $exp) {
+                        $this->log->log('loadFromFile',$exp);
+                    }
+
 	            }
 	            $this->log->log('loadFromFile', "$count records loaded");
 	        }
