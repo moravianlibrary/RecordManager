@@ -55,6 +55,7 @@ Parameters:
 --field            Field to analyze (count)
 --file             File containing places to geocode (updategeocoding)
 --verbose          Enable verbose output for debugging
+--portal           Portal to be updated -- used to load merge record settings
 --config.section.name=value 
                    Set configuration directive to given value overriding any setting in recordmanager.ini
 
@@ -69,11 +70,12 @@ EOT;
     $sources = isset($params['source']) ? $params['source'] : '';
     $single = isset($params['single']) ? $params['single'] : '';
     $noCommit = isset($params['nocommit']) ? $params['nocommit'] : false;
+    $portal = isset($params['portal']) ? $params['portal'] : '';
 
     // Solr update can handle multiple sources at once
     if ($params['func'] == 'updatesolr') {
         $date = isset($params['all']) ? '' : (isset($params['from']) ? $params['from'] : null);
-        $manager->updateSolrIndex($date, $sources, $single, $noCommit); 
+        $manager->updateSolrIndex($date, $sources, $single, $noCommit, $portal); 
     } else {
         foreach (explode(',', $sources) as $source) {
             switch ($params['func'])

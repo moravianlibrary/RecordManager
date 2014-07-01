@@ -38,7 +38,7 @@ require_once 'HarvestMetaLib.php';
 require_once 'HarvestSfx.php';
 require_once 'XslTransformation.php';
 require_once 'MetadataUtils.php';
-require_once 'SolrUpdater.php';
+require_once 'MzkSolrUpdater.php';
 require_once 'PerformanceCounter.php';
 
 /**
@@ -391,13 +391,13 @@ class RecordManager
      * 
      * @return void
      */
-    public function updateSolrIndex($fromDate = null, $sourceId = '', $singleId = '', $noCommit = false)
+    public function updateSolrIndex($fromDate = null, $sourceId = '', $singleId = '', $noCommit = false, $portal = '')
     {
         global $configArray;
         foreach (explode(',', $sourceId) as $source) {
             $this->loadSourceSettings($source);
         }
-        $updater = new SolrUpdater($this->db, $this->basePath, $this->log, $this->verbose);
+        $updater = new MzkSolrUpdater($this->db, $this->basePath, $this->log, $this->verbose, $portal);
         
         if (isset($configArray['Solr']['merge_records']) && $configArray['Solr']['merge_records']) {
             return $updater->updateMergedRecords($fromDate, $sourceId, $singleId, $noCommit);
