@@ -18,12 +18,17 @@ class EbscoMarcRecord extends MappablePortalMarcRecord
 
     public function getID()
     {
-        return $this->getField('001');
+        return trim($this->getField('001'));
     }
 
     public function getFormat()
     {
         return array('Ebook');
+    }
+    
+    public function getVisible()
+    {
+        return 'visible';
     }
 
 }
