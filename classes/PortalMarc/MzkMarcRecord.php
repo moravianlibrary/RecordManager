@@ -237,7 +237,7 @@ class MzkMarcRecord extends MappablePortalMarcRecord
     {
         // MZK field is remapped to 991 in OAI
         $mzkHidden = $this->getFieldSubfields('991', array('s'));
-        if ($mzkHidden == 'SKRYTO') {
+        if (self::startsWith($mzkHidden, 'SKRYTO')) {
             return 'hidden';
         }
         // FMT field is remapped to 990 in OAI and is control field
@@ -278,7 +278,7 @@ class MzkMarcRecord extends MappablePortalMarcRecord
     {
         static $allowedBases = array(
             'MZK01' => array("33", "44", "99"),
-            'MZK03' => array("mzk", "rajhrad", "znojmo", "trebova", "dacice"),
+            'MZK03' => array("mzk", "rajhrad", "znojmo", "trebova", "dacice", "minorite"),
         );
         global $dataSourceSettings;
         $base = $dataSourceSettings[$this->source]['base'];
