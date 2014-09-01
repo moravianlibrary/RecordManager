@@ -261,7 +261,8 @@ class MzkMarcRecord extends MappablePortalMarcRecord
     public function getAcquisitionDate()
     {
         $mzkAcqDate = $this->getFieldSubfields('991', array('b'));
-        if ($mzkAcqDate == null) {
+        $nov = $this->getFieldSubfields('991', array('c'));
+        if ($mzkAcqDate == null || $nov == null || !self::startsWith($nov, 'NOV')) {
             return null;
         }
         $mzkAcqDate = trim($mzkAcqDate);
