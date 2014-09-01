@@ -1860,7 +1860,9 @@ class RecordManager
         $this->idPrefix = $source . '.';
         if (isset($settings['idPrefix']) && $settings['idPrefix']) {
             $this->idPrefix = $settings['idPrefix'];
-            if (substr($this->idPrefix, -1) != '-') {
+            if ($this->idPrefix == "##NONE##") {
+                $this->idPrefix = '';
+            } else if (substr($this->idPrefix, -1) != '-') {
                 $this->idPrefix .= '.';
             }
         }

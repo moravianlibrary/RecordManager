@@ -28,7 +28,7 @@ class MzkMarcRecord extends MappablePortalMarcRecord
         parent::__construct($data, $oaiID, $source);
         list($oai, $domain, $ident) = explode(':', $oaiID);
         list($base, $sysno) = explode('-', $ident);
-        $this->id = $sysno;
+        $this->id = $ident;
         $this->sysno = $sysno;
     }
 
