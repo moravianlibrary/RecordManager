@@ -281,8 +281,7 @@ class MzkMarcRecord extends MappablePortalMarcRecord
             'MZK01' => array("33", "44", "99"),
             'MZK03' => array("mzk", "rajhrad", "znojmo", "trebova", "dacice", "minorite"),
         );
-        global $dataSourceSettings;
-        $base = $dataSourceSettings[$this->source]['base'];
+        list($base, $sysno) = explode('-', $this->getID());
         $firstBase = 'facet_base_' . $base;
         $bases = array($firstBase);
         $secBase = $this->getFieldSubfields('991', ($base == 'MZK01') ? array('x') : array('k'));
