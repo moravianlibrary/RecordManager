@@ -75,8 +75,8 @@ class MzkCistBrnoMarcRecord extends CistBrnoMarcRecord
                             $value = $this->mapString($this->settings['996l_map'], $value);
                         }
                     }
-
-                    if (!empty($value)) {
+                  
+                    if (strlen($value) > 0) {
                         $result .= '$' . $code . $value;
                     }
                 }
