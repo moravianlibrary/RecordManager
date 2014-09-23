@@ -1863,9 +1863,9 @@ class MarcRecord extends BaseRecord
      *
      * @return string Concatenated subfields (space-separated)
      */
-    protected function getFirstFieldSubfields($fieldspecs)
+    protected function getFirstFieldSubfields($fieldspecs, $stripTrailingPunctuation = true, $splitSubfields = false)
     {
-        $data = $this->getFieldsSubfields($fieldspecs, true);
+        $data = $this->getFieldsSubfields($fieldspecs, true, $stripTrailingPunctuation, $splitSubfields);
         if (!empty($data)) {
             return $data[0];
         }

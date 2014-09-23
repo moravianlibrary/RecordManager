@@ -291,9 +291,10 @@ class MappablePortalMarcRecord extends MappableMarcRecord
 
     public function getTitleShort()
     {
-        $title = $this->getFirstFieldSubfields(array(
+        $fieldspecs = array(
             array(MarcRecord::GET_NORMAL, '245', array('a'))
-        ));
+        );
+        $title = $this->getFirstFieldSubfields($fieldspecs, false, false);
         return $title;
     }
 
