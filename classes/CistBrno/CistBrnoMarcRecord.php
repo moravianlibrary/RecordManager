@@ -19,6 +19,7 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
 {
     
     protected $allFields = array(856, 880, 902, 928, 964, 975, 978, 981, 982, 983, 984, 985);
+    protected $facetLanguageDependentFields = array('600', '610', '611', '630', '650', '651', '655');
     
     /**
      * Constructor
@@ -120,7 +121,6 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
             $data['holdings'. $fieldNo . '_str_mv'] = $holdings;
         }
         
-        
         $data['topic'] = $this->getFieldsSubfields(
             array(
                 array(MarcRecord::GET_BOTH, '600', array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z')),
@@ -131,7 +131,7 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
                 array(MarcRecord::GET_BOTH, '964', array('a'))
             )
         );
-        
+
         $data['era_facet'] = $this->getFieldsSubfields(
             array(
                 array(MarcRecord::GET_NORMAL, '630', array('y')),
@@ -158,9 +158,19 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
                 array(MarcRecord::GET_NORMAL, '655', array('v'))
             ),
             false, true, true
-       );
-       
+        );
         
+        $topicFacets = $this->getTopicFacets();
+        $data['topic_facet_cze_txtF'] = $topicFacets['topic_facet_cze_txtF'];
+        $data['topic_facet_eng_txtF'] = $topicFacets['topic_facet_eng_txtF'];
+        
+        $eraFacets = $this->getEraFacets();
+        $data['era_facet_cze_txtF'] = $eraFacets['era_facet_cze_txtF'];
+        $data['era_facet_eng_txtF'] = $eraFacets['era_facet_eng_txtF'];
+         
+        $genreFacets = $this->getGenreFacets();
+        $data['genre_facet_cze_txtF'] = $genreFacets['genre_facet_cze_txtF'];
+        $data['genre_facet_eng_txtF'] = $genreFacets['genre_facet_eng_txtF'];
         
         $data['title_portaly_txtP'] =  $this->getFieldSubfields('245', array('a', 'b'));
         return $data;
@@ -294,7 +304,6 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
             }
         }
         $result = array_unique($result);
-        //var_export($result);
         return $result;
     }
     
@@ -540,5 +549,104 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
             }
         }
         return $formats;
+    }
+    
+    /**
+     * @return array topic_facet_cze_txtF - czech facet
+     *               topic_facet_eng_txtF - english facet
+     */    
+    protected function getTopicFacets() {
+        $fieldsArray = array(
+            '600' => array('x'),
+            '610' => array('x'),
+            '611' => array('x'),
+            '630' => array('x'),
+            '648' => array('x'),
+            '650' => array('a', 'x'),
+            '651' => array('x'),
+            '655' => array('x')
+        );
+        return $this->getLanguageDependentFacetFields('topic', $fieldsArray);
+    }
+    
+    /**
+     * @return array era_facet_cze_txtF - czech facet
+     *               era_facet_eng_txtF - english facet
+     */
+    protected function getEraFacets() {
+        $fieldsArray = array(
+            '630' => array('y'),
+            '648' => array('a'),
+            '648' => array('y'),
+            '650' => array('y'),
+            '651' => array('y'),
+            '655' => array('y'),
+            '985' => array('a')
+        );
+        return $this->getLanguageDependentFacetFields('era', $fieldsArray);
+    }
+    
+    /**
+     * @return array genre_facet_cze_txtF - czech facet
+     *               genre_facet_eng_txtF - english facet
+     */
+    protected function getGenreFacets() {
+        $fieldsArray = array(
+           '600' => array('v'),
+           '610' => array('v'),
+           '611' => array('v'),
+           '630' => array('v'),
+           '648' => array('v'),
+           '650' => array('v'),
+           '651' => array('v'),
+           '655' => array('a','v')
+        );
+        return $this->getLanguageDependentFacetFields('genre', $fieldsArray);
+    }
+
+    /**
+     * 
+     * @param stromg $facetName
+     * @param array $fieldsArray fieldName => array(subfield1, subfield2 ...)
+     * @return array 
+     */
+    protected function getLanguageDependentFacetFields($facetName, $fieldsArray) {
+        $result = array();
+        $result[$facetName . '_facet_cze_txtF'] = array();
+        $result[$facetName . '_facet_eng_txtF'] = array();
+        foreach ($fieldsArray as $fieldNo => $codes) {
+            $fields = $this->getFields($fieldNo);
+            foreach ($fields as $field) {
+                if (!is_array($field)) {
+                    continue;
+                }
+                if (!in_array($fieldNo, $this->facetLanguageDependentFields)) {
+                    foreach ($codes as $code) {
+                        $newTopic = $this->getSubfields($field, $code);
+                        if ($newTopic) {
+                            $result[$facetName . '_facet_cze_txtF'][] = $newTopic;
+                            $result[$facetName . '_facet_eng_txtF'][] = $newTopic;
+                        }
+                    }
+                }
+                if (array_key_exists('i2', $field) && ($field['i2'] == null || $field['i2'] == '7')) {
+                    foreach ($codes as $code) {
+                        $newTopic = $this->getSubfields($field, $code);
+                        if ($newTopic) {
+                            $result[$facetName . '_facet_cze_txtF'][] = $newTopic;
+                        }
+                    }
+                }
+                if (array_key_exists('i2', $field) && ($field['i2'] == null || $field['i2'] == '9')) {
+                    foreach ($codes as $code) {
+                        $newTopic = $this->getSubfields($field, $code);
+                        if ($newTopic) {
+                             $result[$facetName . '_facet_eng_txtF'][] = $newTopic;
+                        }
+                    }
+                }
+            }
+        }
+        return $result;
     }
 }
