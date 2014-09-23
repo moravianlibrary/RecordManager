@@ -294,11 +294,6 @@ class MappablePortalMarcRecord extends MappableMarcRecord
         $title = $this->getFirstFieldSubfields(array(
             array(MarcRecord::GET_NORMAL, '245', array('a'))
         ));
-        // FIXME
-        /*
-        $title = preg_replace('/[/\\: \\]]*$/i', '', $title);
-        $title = preg_replace('/^[\\[]/i', '', $title);
-        */
         return $title;
     }
 
