@@ -16,42 +16,6 @@ require_once 'MzkMarcRecord.php';
 class MzkNormsMarcRecord extends MzkMarcRecord
 {
 
-    /**
-     * Record id
-     *
-     */
-    protected $id;
-
-    /**
-     * Constructor
-     *
-     * @param string $data   Metadata
-     * @param string $oaiID  Record ID received from OAI-PMH (or empty string for file import)
-     * @param string $source Source ID
-     */
-    public function __construct($data, $oaiID, $source)
-    {
-        parent::__construct($data, $oaiID, $source);
-        list($oai, $domain, $ident) = explode(':', $oaiID);
-        list($base, $sysno) = explode('-', $ident);
-        $this->id = $sysno;
-    }
-
-    /**
-     * Return record ID (local)
-     *
-     * @return string
-     */
-    public function getID()
-    {
-        return $this->id;
-    }
-
-    public function getLinkingID()
-    {
-        return $this->id;
-    }
-
     public function getFormat()
     {
         return 'Norm';
