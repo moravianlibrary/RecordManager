@@ -161,16 +161,16 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
         );
         
         $topicFacets = $this->getTopicFacets();
-        $data['topic_facet_cze_txtF'] = $topicFacets['topic_facet_cze_txtF'];
-        $data['topic_facet_eng_txtF'] = $topicFacets['topic_facet_eng_txtF'];
+        $data['topic_facet_cze_txtF_mv'] = $topicFacets['topic_facet_cze_txtF_mv'];
+        $data['topic_facet_eng_txtF_mv'] = $topicFacets['topic_facet_eng_txtF_mv'];
         
         $eraFacets = $this->getEraFacets();
-        $data['era_facet_cze_txtF'] = $eraFacets['era_facet_cze_txtF'];
-        $data['era_facet_eng_txtF'] = $eraFacets['era_facet_eng_txtF'];
+        $data['era_facet_cze_txtF_mv'] = $eraFacets['era_facet_cze_txtF_mv'];
+        $data['era_facet_eng_txtF_mv'] = $eraFacets['era_facet_eng_txtF_mv'];
          
         $genreFacets = $this->getGenreFacets();
-        $data['genre_facet_cze_txtF'] = $genreFacets['genre_facet_cze_txtF'];
-        $data['genre_facet_eng_txtF'] = $genreFacets['genre_facet_eng_txtF'];
+        $data['genre_facet_cze_txtF_mv'] = $genreFacets['genre_facet_cze_txtF_mv'];
+        $data['genre_facet_eng_txtF_mv'] = $genreFacets['genre_facet_eng_txtF_mv'];
         
         $data['title_portaly_txtP'] =  $this->getFieldSubfields('245', array('a', 'b'));
         return $data;
@@ -552,8 +552,8 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
     }
     
     /**
-     * @return array topic_facet_cze_txtF - czech facet
-     *               topic_facet_eng_txtF - english facet
+     * @return array topic_facet_cze_txtF_mv - czech facet
+     *               topic_facet_eng_txtF_mv - english facet
      */    
     protected function getTopicFacets() {
         $fieldsArray = array(
@@ -570,8 +570,8 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
     }
     
     /**
-     * @return array era_facet_cze_txtF - czech facet
-     *               era_facet_eng_txtF - english facet
+     * @return array era_facet_cze_txtF_mv - czech facet
+     *               era_facet_eng_txtF_mv - english facet
      */
     protected function getEraFacets() {
         $fieldsArray = array(
@@ -587,8 +587,8 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
     }
     
     /**
-     * @return array genre_facet_cze_txtF - czech facet
-     *               genre_facet_eng_txtF - english facet
+     * @return array genre_facet_cze_txtF_mv - czech facet
+     *               genre_facet_eng_txtF_mv - english facet
      */
     protected function getGenreFacets() {
         $fieldsArray = array(
@@ -612,28 +612,30 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
      */
     protected function getLanguageDependentFacetFields($facetName, $fieldsArray) {
         $result = array();
-        $result[$facetName . '_facet_cze_txtF'] = array();
-        $result[$facetName . '_facet_eng_txtF'] = array();
+        $result[$facetName . '_facet_cze_txtF_mv'] = array();
+        $result[$facetName . '_facet_eng_txtF_mv'] = array();
         foreach ($fieldsArray as $fieldNo => $codes) {
             $fields = $this->getFields($fieldNo);
             foreach ($fields as $field) {
                 if (!is_array($field)) {
                     continue;
                 }
+                //field isn't checked
                 if (!in_array($fieldNo, $this->facetLanguageDependentFields)) {
                     foreach ($codes as $code) {
                         $newTopic = $this->getSubfields($field, $code);
                         if ($newTopic) {
-                            $result[$facetName . '_facet_cze_txtF'][] = $newTopic;
-                            $result[$facetName . '_facet_eng_txtF'][] = $newTopic;
+                            $result[$facetName . '_facet_cze_txtF_mv'][] = $newTopic;
+                            $result[$facetName . '_facet_eng_txtF_mv'][] = $newTopic;
                         }
                     }
+                    continue;
                 }
                 if (array_key_exists('i2', $field) && ($field['i2'] == null || $field['i2'] == '7')) {
                     foreach ($codes as $code) {
                         $newTopic = $this->getSubfields($field, $code);
                         if ($newTopic) {
-                            $result[$facetName . '_facet_cze_txtF'][] = $newTopic;
+                            $result[$facetName . '_facet_cze_txtF_mv'][] = $newTopic;
                         }
                     }
                 }
@@ -641,10 +643,18 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
                     foreach ($codes as $code) {
                         $newTopic = $this->getSubfields($field, $code);
                         if ($newTopic) {
-                             $result[$facetName . '_facet_eng_txtF'][] = $newTopic;
+                             $result[$facetName . '_facet_eng_txtF_mv'][] = $newTopic;
                         }
                     }
+
                 }
+                
+//                 foreach ($codes as $code) {
+//                     $newTopic = $this->getSubfields($field, $code);
+//                     if ($newTopic) {
+//                         $result[$facetName . '_facet_cze_txtF_mv'][] = $newTopic;
+//                     }
+//                 }
             }
         }
         return $result;
