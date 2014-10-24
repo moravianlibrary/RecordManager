@@ -16,7 +16,9 @@ require_once __DIR__.'/../MappableMarcRecord.php';
  */
 class MappablePortalMarcRecord extends MappableMarcRecord
 {
-    
+
+    public static $currentYear;
+
     /**
      * Return languages - local modification
      *
@@ -125,8 +127,8 @@ class MappablePortalMarcRecord extends MappableMarcRecord
         if ($to == 0) {
             $to = $from;
         }
-        if ($to > 2013) {
-            $to = 2013;
+        if ($to > self::$currentYear) {
+            $to = self::$currentYear;
         }
         for ($year = $from; $year <= $to; $year+=1) {
             $years[] = sprintf("%04d", $year);
@@ -397,3 +399,5 @@ class MappablePortalMarcRecord extends MappableMarcRecord
     }
 
 }
+
+MappablePortalMarcRecord::$currentYear = date("Y");
