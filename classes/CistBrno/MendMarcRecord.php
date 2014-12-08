@@ -156,4 +156,14 @@ class MendMarcRecord extends CistBrnoMarcRecord
         }
         return $mapping[$key];
     }
+    
+    public function parseXML($xml) {
+        if (is_string($xml)) {
+            //get rid of marc21: prefix
+            $newXML = preg_replace('/<marc21:/i', '<', $xml);
+            $newXML = preg_replace('/<\/marc21:/i', '</', $newXML);
+            return parent::parseXML($newXML);
+        }
+        return parent::parseXML($xml);
+    }
 }

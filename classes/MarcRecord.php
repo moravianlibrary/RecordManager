@@ -1257,19 +1257,18 @@ class MarcRecord extends BaseRecord
            }
        }
 
-       $query = $document->xpath($namespace.'leader');
+       $query = $document->xpath('//'.$namespace.'leader');
        if ($query !== false && count($query) > 0) {
            $this->fields['000'] = (string) $query[0];
        } else {
            $this->fields['000'] = '';
        }
 
-       $query = $document->xpath($namespace.'controlfield');
        foreach ($query as $field) {
            $this->fields[(string)$field['tag']][] = (string)$field[0];
        }
 
-       $query = $document->xpath($namespace.'datafield');
+       $query = $document->xpath('//'.$namespace.'datafield');
        foreach ($query as $field) {
            $newField = array(
                    'i1' => str_pad((string)$field['ind1'], 1),
