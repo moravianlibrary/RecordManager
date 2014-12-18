@@ -26,7 +26,7 @@
  * @link     https://github.com/KDK-Alli/RecordManager
  */
 
-require_once __DIR__.'/../MarcRecord.php';
+require_once __DIR__.'/../PortalsCommonMarcRecord.php';
 require_once __DIR__.'/../MetadataUtils.php';
 require_once __DIR__.'/../Logger.php';
 
@@ -41,7 +41,7 @@ require_once __DIR__.'/../Logger.php';
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/moravianlibrary/RecordManager
  */
-class HistoricalMarcRecord extends MarcRecord
+class HistoricalMarcRecord extends PortalsCommonMarcRecord
 {
 
     /**
@@ -53,6 +53,11 @@ class HistoricalMarcRecord extends MarcRecord
      */
     public function __construct($data, $oaiID, $source)
     {
+        global $configArray;
+        if (!$configArray['HF']['format_unification_array']) {
+            throw new Exception("No format unification for HF");
+        }
+        
         parent::__construct($data, $oaiID, $source);
     }
     
@@ -67,15 +72,57 @@ class HistoricalMarcRecord extends MarcRecord
         }
         
         $field = parent::getField('260');
+        $pubYear = null;
         if ($field) {
             $year = parent::getSubfield($field, 'c');
             $matches = array();
             if ($year && preg_match('/(\d{4})/', $year, $matches)) {
-                $data['publishDate_display'] = $matches[1];
+                 $pubYear = $matches[1];
+                 $data['publishDate_display'] = $pubYear;
+            }
+            
+        }
+        
+        $field = parent::getField('245');
+        if ($field) {
+            $subField = parent::getSubfield($field, 'h');
+            if (isset($subField) && is_string($subField)) {
+                if (preg_match('/rukopis/i', $subField)) {
+                    $data['format'] = array('hf_manuscripts');
+                }
+                if (preg_match('/mikrodokument/i', $subField)) {
+                    $data['format'] = array('hf_microforms');
+                }
             }
         }
-    
+        
+        if ($pubYear != null && $pubYear <= 1500) {
+            if ($pubYear > 1440) {
+                $data['format'] = 
+                    is_array($data['format']) && in_array('hf_manuscripts', $data['format']) ? 
+                        array('hf_manuscripts') : array('hf_incunable');
+            } else {
+                $data['format'] = array('hf_manuscripts');
+            }
+        }
+
         return $data;
     }  
+    
+    protected function unifyFormats($formats) {
+        global $configArray;
+        global $logger;
+        $unificationArray = &$configArray['HF']['format_unification_array'];
+        $unified = array();
+        foreach ($formats as $format) {
+            if (!$unificationArray[$format]) {
+                $logger->log('unifyHFFormats', "No mapping found for: $format \t". $this->getID(), Logger::WARNING);
+                $unified[] = 'unmapped_' . $format;
+            } else {
+                $unified = array_merge($unified, explode(',', $unificationArray[$format]));
+            }
+        }
+        return array_unique($unified);
+    }
 } 
 

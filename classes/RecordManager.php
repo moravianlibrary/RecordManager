@@ -141,13 +141,24 @@ class RecordManager
             ? $this->readListFile($configArray['Site']['articles']) : array();
             
         // Read settings for CistBrno
-        if ($configArray['CistBrno'] && $configArray['CistBrno']['format_unification']) {
+        if ($configArray['CistBrno'] 
+                && $configArray['CistBrno']['format_unification'] 
+                && file_exists($configArray['CistBrno']['format_unification'])) {
         	$configArray['CistBrno']['format_unification_array'] = parse_ini_file($configArray['CistBrno']['format_unification']);
         }
 
         // Read settings for VNF
-        if ($configArray['VNF'] && $configArray['VNF']['format_unification']) {
+        if ($configArray['VNF'] 
+                && $configArray['VNF']['format_unification'] 
+                && file_exists($configArray['VNF']['format_unification'])) {
             $configArray['VNF']['format_unification_array'] = parse_ini_file($configArray['VNF']['format_unification']);
+        }
+        
+        // Read settings for VNF
+        if ($configArray['HF']
+            && $configArray['HF']['format_unification']
+            && file_exists($configArray['HF']['format_unification'])) {
+                $configArray['HF']['format_unification_array'] = parse_ini_file($configArray['HF']['format_unification']);
         }
     }
 
@@ -410,9 +421,10 @@ class RecordManager
         }
         $updater = new SolrUpdater($this->db, $this->basePath, $this->log, $this->verbose);
         
-        if (isset($configArray['Solr']['merge_records']) && $configArray['Solr']['merge_records']) {
+        if (isset($configArray['Solr']['merge_records']) && $configArray['Solr']['merge_records'] != 'false') {
             return $updater->updateMergedRecords($fromDate, $sourceId, $singleId, $noCommit);
         }
+
         return $updater->updateIndividualRecords($fromDate, $sourceId, $singleId, $noCommit);
     }
 
