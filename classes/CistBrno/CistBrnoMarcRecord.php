@@ -419,7 +419,7 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
         $depth = 0;
         $instArray = array();
         
-        $instArray[] = $depth.'/'.$institution;
+        $instArray[] = $depth.'/'.$institution.'/';
         if ($lvl2field == null || $lvl2subfield == null) {
             return $instArray;
         }
@@ -427,7 +427,7 @@ class CistBrnoMarcRecord extends PortalsCommonMarcRecord
         foreach (parent::getFields($lvl2field) as $field) {       
             $subField = parent::getSubfields($field, $lvl2subfield);
             if ($subField) {
-                $instArray[] = '1/'. $institution . '/'.$subField;
+                $instArray[] = '1/'. $institution . '/' . $subField . '/';
             }
         }
         

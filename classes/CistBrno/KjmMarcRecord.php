@@ -58,7 +58,7 @@ class KjmMarcRecord extends CistBrnoMarcRecord
         $institution = $this->getInstitution();
         $depth = 0;
         $instArray = array();
-        $instArray[] = $depth++ . '/' .$institution;
+        $instArray[] = $depth++ . '/' .$institution . '/';
 
         $fld = $this->getFields('993');
         foreach ($fld as $current) {
@@ -90,7 +90,7 @@ class KjmMarcRecord extends CistBrnoMarcRecord
             if ($this->settings['institution_hierarchy']) {
                 $instMapping = parse_ini_file($this->settings['institution_hierarchy']);
                 if (isset($instMapping[$id])) {
-                    $instArray[] = $depth . '/' . $institution . '/' . $instMapping[$id];
+                    $instArray[] = $depth . '/' . $institution . '/' . $instMapping[$id] . '/';
                 }
             }
         }
