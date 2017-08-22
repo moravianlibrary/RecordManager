@@ -66,9 +66,9 @@ class HistoricalMarcRecord extends PortalsCommonMarcRecord
         
         if (isset($data['url']) && is_array($data['url'])
                 && isset($data['url'][0])) {
-            $data['status'] = 'online';
+            $data['status_str_mv'] = 'online';
         } else {
-            $data['status'] = 'offline';
+            $data['status_str_mv'] = 'offline';
         }
         
         $field = parent::getField('260');

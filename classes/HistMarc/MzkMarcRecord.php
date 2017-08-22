@@ -44,5 +44,14 @@ class MzkMarcRecord extends HistoricalMarcRecord
 
         return $data;
     }  
+
+    public function getID()
+    {
+        if (substr($this->getField('001'), 0, 5) === "mzk03") {
+            return substr($this->getField('001'), 5);
+        }
+        else return $this->getField('001');
+    }
+
 } 
 

@@ -46,7 +46,7 @@ class MkpMarcRecord extends HistoricalMarcRecord
         if ( !empty($field)) {
             $data['url'] = parent::getSubfields($field,'a');
             if (!empty($data['url'])) {
-                $data['status'] = 'online';
+                $data['status_str_mv'] = 'online';
             }
         }
 

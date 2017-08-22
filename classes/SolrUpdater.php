@@ -603,7 +603,7 @@ class SolrUpdater
                     }
                 }
                 $params['dedup_id'] = array('$exists' => false);
-                $params['update_needed'] = false;
+//                 $params['update_needed'] = false;
             }
             $records = $this->db->record->find($params);
             $records->immortal(true);
@@ -813,7 +813,7 @@ class SolrUpdater
                 throw new Exception("Error: format not set for $source\n");
             }
             $this->settings[$source] = $settings;
-            $this->settings[$source]['idPrefix'] = isset($settings['idPrefix']) && $settings['idPrefix'] ? (($settings['idPrefix'] == '##NONE##')?'':$settings['idPrefix']) : $source;
+            $this->settings[$source]['idPrefix'] = isset($settings['idPrefix']) && $settings['idPrefix'] ? $settings['idPrefix'] : $source;
             $this->settings[$source]['componentParts'] = isset($settings['componentParts']) && $settings['componentParts'] ? $settings['componentParts'] : 'as_is';
             $this->settings[$source]['indexMergedParts'] = isset($settings['indexMergedParts']) ? $settings['indexMergedParts'] : true;
             $this->settings[$source]['solrTransformationXSLT'] = isset($settings['solrTransformation']) && $settings['solrTransformation'] ? new XslTransformation($this->basePath . '/transformations', $settings['solrTransformation']) : null;
