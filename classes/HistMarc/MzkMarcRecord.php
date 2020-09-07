@@ -53,5 +53,24 @@ class MzkMarcRecord extends HistoricalMarcRecord
         else return $this->getField('001');
     }
 
+    public function checkRecord() {
+        if (!parent::checkRecord()) {
+            return false;
+        }
+        $valueArray = $this->getFieldsSubfields(array(array(MarcRecord::GET_NORMAL, '991', array('s'))));
+        if (count($valueArray) > 0 && preg_match('/SKRYTO/i', $valueArray[0])) {
+            return false;
+        }
+        $valueArray = $this->getFieldsSubfields(array(array(MarcRecord::GET_NORMAL, '992', array('a'))));
+        if (count($valueArray) > 0 && preg_match('/SUPPRESSED/i', $valueArray[0])) {
+            return false;
+        }
+        $valueArray = $this->getFieldsSubfields(array(array(MarcRecord::GET_NORMAL, '990', array('a'))));
+        if (count($valueArray) > 0 && preg_match('/AZ/i', $valueArray[0])) {
+            return false;
+        }
+        return true;
+    }
+
 } 
 
